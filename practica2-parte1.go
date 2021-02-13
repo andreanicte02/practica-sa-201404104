@@ -13,6 +13,12 @@ import (
 	"strings"
 )
 
+/*
+	-struct utilizado para almacenar los datos del usuario
+		--nombre
+		--carnet
+
+ */
 type user struct {
 
 	Name string
@@ -20,12 +26,23 @@ type user struct {
 
 }
 
+/*
+	-struct urilido para guarda la informacion del header
+
+*/
 
 type header struct {
+
 
 	Alg string `json:"alg"`
 	Typ string `json:"type"`
 }
+
+/*
+
+	-struct utilizado para guardar los daots del usuario y su respectivo secrect
+
+ */
 
 type usersStruct struct {
 
@@ -34,13 +51,19 @@ type usersStruct struct {
 
 }
 
+
+/*
+	-funcion para codificar string en base 64
+*/
 func base64Encode(src string) string {
 	return strings.
 		TrimRight(base64.URLEncoding.
 			EncodeToString([]byte(src)), "=")
 }
 
-
+/*
+	-funcion para decodficar string en base 64
+*/
 func base64Decode(src string) string {
 	if l:= len(src) % 4; l > 0 {
 		src += strings.Repeat("=", 4-l)
@@ -50,6 +73,9 @@ func base64Decode(src string) string {
 	return string(decoded)
 }
 
+/*
+	-funcion para generar el secreto
+*/
 func generateScret() string {
 	b := make([]byte, 4)
 	rand.Read(b)
@@ -66,6 +92,10 @@ func main() {
 
 }
 
+/*
+	funcion que permite generar la parte de  SIGNATURE del jwt
+
+ */
 func generateSignature(secret string, strFinal string) string {
 
 	key:= []byte(secret)
@@ -76,6 +106,10 @@ func generateSignature(secret string, strFinal string) string {
 	
 }
 
+/*
+	funcion que permite generar to-do el string del token jwt
+
+*/
 func generateJWT(user * user, secret string) string  {
 
 	headerData := header {"HS256", "JWT"}
@@ -94,11 +128,18 @@ func generateJWT(user * user, secret string) string  {
 
 }
 
+/*
+	130-esta funcion decodifica el la parte del token pyload
+	135-verifica si existe en memoria el usuario con ese numero de carnet
+	140-si si existe procede a generar to-do el token nuevamente, con el pyload codificado
+	142-si es igual el token es aprovado
+	147-si no es denegado
+*/
 func confirmToken(jwt string, userStruct *usersStruct) {
 	arrayJWT := strings.Split(jwt, ".")
 
 	if len(arrayJWT) != 3{
-		fmt.Println("el token no esta completo")
+		fmt.Println("token denegado")
 		return
 	}
 
@@ -125,13 +166,11 @@ func confirmToken(jwt string, userStruct *usersStruct) {
 
 }
 
+/*
 
+	-funcion que inicia el flujo de la aplicacion
 
-
-
-
-
-
+*/
 
 func menu(){
 
@@ -139,11 +178,13 @@ func menu(){
 	for true {
 
 		var user user
+		//se genra secret
 		secret := generateScret()
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Println(">>>>>>>>>>>>>>>>>>>>menu<<<<<<<<<<<<<<<<<<<<<<")
 		fmt.Println("Ingresar nombre:")
 
+		//se empiezan a capturar los datos de nombre y usuario
 		scanner.Scan()
 		user.Name = scanner.Text()
 
@@ -152,10 +193,14 @@ func menu(){
 		scanner.Scan()
 		user.Carne, _ = strconv.Atoi(scanner.Text())
 
+		//se gemera el string de jwt
 		jwt :=generateJWT(&user, secret)
 		fmt.Println("Token generado: "+ jwt)
+
+		//se guarda el secret y los datos ingresados del usuario
 		userStruct := usersStruct{&user, secret}
 
+		//menu para decidir si se va a comparar los tokens
 		for true{
 
 			option := 0
