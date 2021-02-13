@@ -20,11 +20,6 @@ type user struct {
 
 }
 
-type secret struct {
-
-	userData* user
-	secret string
-}
 
 type header struct {
 
@@ -32,14 +27,21 @@ type header struct {
 	Typ string `json:"type"`
 }
 
-func Base64Encode(src string) string {
+type usersStruct struct {
+
+	user *user
+	secret string
+
+}
+
+func base64Encode(src string) string {
 	return strings.
 		TrimRight(base64.URLEncoding.
 			EncodeToString([]byte(src)), "=")
 }
 
 
-func Base64Decode(src string) string {
+func base64Decode(src string) string {
 	if l:= len(src) % 4; l > 0 {
 		src += strings.Repeat("=", 4-l)
 	}
@@ -74,45 +76,105 @@ func generateSignature(secret string, strFinal string) string {
 	
 }
 
-func generateJWS(userData * user) string  {
+func generateJWT(user * user, secret string) string  {
 
 	headerData := header {"HS256", "JWT"}
 	jsonHeader, _ := json.Marshal(headerData)
 
-	encodedHeader:= Base64Encode(string(jsonHeader))
+	encodedHeader:= base64Encode(string(jsonHeader))
 
-	jsonPayload,_ := json.Marshal(userData)
-	encodedPyload := Base64Encode(string(jsonPayload))
+	jsonPayload,_ := json.Marshal(user)
+	encodedPyload := base64Encode(string(jsonPayload))
 
 	strFinal := encodedHeader+"."+encodedPyload
 
-	return strFinal+"."+generateSignature(generateScret(),strFinal)
+	return strFinal+"."+generateSignature(secret,strFinal)
 
 
+
+}
+
+func confirmToken(jwt string, userStruct *usersStruct) {
+	arrayJWT := strings.Split(jwt, ".")
+
+	if len(arrayJWT) != 3{
+		fmt.Println("el token no esta completo")
+		return
+	}
+
+	//la data pyload
+	jsonPyload := base64Decode(arrayJWT[1])
+	var user user
+	json.Unmarshal([]byte(jsonPyload), &user)
+
+	if user.Carne != userStruct.user.Carne{
+		fmt.Println("el usuario con ese carnet no tiene permiso")
+		return
+	}
+
+	strJWTGeneradoDeNuevo := generateJWT(&user, userStruct.secret)
+
+	if jwt == strJWTGeneradoDeNuevo {
+		fmt.Println("Acceso conseguido")
+		fmt.Println("jwt generado primero"+ jwt)
+		fmt.Println("jwt generado para comparar"+ strJWTGeneradoDeNuevo)
+
+	}else{
+		fmt.Println("Acceso denegado")
+	}
 
 }
 
 
 
 
+
+
+
+
+
 func menu(){
 
-	var userData user
-	var sercte := generateScret()
 
-	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println(">>>>>>>>>>>>>>>>>>>>menu<<<<<<<<<<<<<<<<<<<<<<")
-	fmt.Println("Ingresar nombre:")
+	for true {
 
-	scanner.Scan()
-	userData.Name = scanner.Text()
+		var user user
+		secret := generateScret()
+		scanner := bufio.NewScanner(os.Stdin)
+		fmt.Println(">>>>>>>>>>>>>>>>>>>>menu<<<<<<<<<<<<<<<<<<<<<<")
+		fmt.Println("Ingresar nombre:")
 
-	fmt.Println("Carnet:")
+		scanner.Scan()
+		user.Name = scanner.Text()
 
-	scanner.Scan()
-	userData.Carne, _ = strconv.Atoi(scanner.Text())
+		fmt.Println("Carnet:")
 
-	fmt.Println(generateJWS(&userData))
+		scanner.Scan()
+		user.Carne, _ = strconv.Atoi(scanner.Text())
+
+		jwt :=generateJWT(&user, secret)
+		fmt.Println("Token generado: "+ jwt)
+		userStruct := usersStruct{&user, secret}
+
+		for true{
+
+			option := 0
+			fmt.Println("1. Decodificar")
+			fmt.Println("2. Salir:")
+
+			fmt.Scanf("%d", &option)
+
+			if option == 1 {
+
+				confirmToken(jwt,&userStruct)
+				fmt.Scanf("%d", &option)
+
+			}
+		}
+
+
+
+	}
 
 
 }
