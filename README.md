@@ -270,4 +270,4 @@ Método Add
 
 
 
-![5](/home/nicte/Escritorio/Sa/sa-practica/img-p2/5.png)
+![5](img-p2/5.png)
