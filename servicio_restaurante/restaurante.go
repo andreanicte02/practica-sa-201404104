@@ -11,9 +11,9 @@ import (
 	"net/http"
 )
 
-var hashCliente = make(map[int]estructura.Cliente)
-var hashPedido = make(map[int]estructura.Pedido)
-var hashMenu = make(map[int]estructura.Menu)
+var hashCliente = make(map[int]*estructura.Cliente)
+var hashPedido = make(map[int]*estructura.Pedido)
+var hashMenu = make(map[int]*estructura.Menu)
 var idPedido = 0
 
 
@@ -40,7 +40,7 @@ func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	hashPedido[idPedido]=data
+	hashPedido[idPedido]=&data
 //simulacionEntregaPedidoAlRepartidor(idPedido)
 	m.Message =  "pedidio realizado"
 	m.Id = idPedido
@@ -81,7 +81,7 @@ func etado_pedido(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	m.Message = hashCliente[pedido.IdCliente].Nombre + "respuesta estado de pedidio" + strStatus
+	m.Message = hashCliente[pedido.IdCliente].Nombre + "respuesta estado de pedidio " + strStatus
 	m.Id = pedido.IdEstado
 	json.NewEncoder(w).Encode(m)
 
@@ -133,7 +133,7 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 
 
 
-	data,_:= json.Marshal(estructura.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido})
+	data,_:= json.Marshal(estructura.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido,0})
 	req,err := http.NewRequest("POST", "http://localhost:8082/recibir_pedidio", bytes.NewBuffer(data))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
@@ -167,13 +167,13 @@ func handle()  {
 
 func main()  {
 
-	hashMenu[0]=estructura.Menu{0,"menu1"}
-	hashMenu[1]=estructura.Menu{1,"menu1"}
-	hashMenu[2]=estructura.Menu{2,"menu1"}
+	hashMenu[0]=&estructura.Menu{0,"menu1"}
+	hashMenu[1]=&estructura.Menu{1,"menu1"}
+	hashMenu[2]=&estructura.Menu{2,"menu1"}
 
-	hashCliente[0]=estructura.Cliente{0,"cliente1"}
-	hashCliente[1]=estructura.Cliente{1,"cliente2"}
-	hashCliente[2]=estructura.Cliente{2,"cliente2"}
+	hashCliente[0]=&estructura.Cliente{0,"cliente1"}
+	hashCliente[1]=&estructura.Cliente{1,"cliente2"}
+	hashCliente[2]=&estructura.Cliente{2,"cliente2"}
 
 
 	handle()

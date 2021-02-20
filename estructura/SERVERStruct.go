@@ -35,6 +35,7 @@ type PedidoRepartidor struct {
 	IdEstado int `json:"IdEstado"` //0 pendiente 1 completado
 	DescripcionMenu string `json:"DescripcionMenu"`
 	IdPedido int  `json:"idPedido"`
+	EstadoRepartidor int `json:"estadoRepartidor ya tomo el pedido o no"`
 
 
 }
