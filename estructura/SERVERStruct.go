@@ -23,7 +23,18 @@ type Pedido struct {
 
 	IdMenu int `json:"idMenu"`
 	IdCliente int `json:"idCliente"`
-	IdEstado int `json:"idCliente"` //0 pendiente 1 completado
+	IdEstado int `json:"IdEstado"` //0 pendiente 1 completado
+
+
+}
+
+type PedidoRepartidor struct {
+
+	IdMenu int `json:"idMenu"`
+	IdCliente int `json:"idCliente"`
+	IdEstado int `json:"IdEstado"` //0 pendiente 1 completado
+	DescripcionMenu string `json:"DescripcionMenu"`
+	IdPedido int  `json:"idPedido"`
 
 
 }

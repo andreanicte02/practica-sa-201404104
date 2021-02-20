@@ -31,4 +31,6 @@ func main()  {
 	hash[0]= estructura.Cliente{3,"cliente3"}
 
 
+
+
 }
