@@ -1,0 +1,287 @@
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+//struct que mantiene la informacion en memoria, lo mismo es pa
+type pedido struct {
+
+	idRestaurante int
+	nombreRestaurante string
+	idCliente int
+	nombreCliente string
+	idRepartidor int
+	nombreRepartidor string
+	estadoRepartidor int //0 esperando pedido 1 en camino
+	estadoPedido int //0 cumplido 1 pendiente
+	descripcion string
+
+}
+
+type key struct {
+	Id int `json:"Id"`
+}
+
+var contador = 0
+var m = map[int]pedido{}
+
+
+func crearPedido(w http.ResponseWriter, r *http.Request)  {
+
+	var pedido = key{}
+
+	err := json.NewDecoder(r.Body).Decode(&pedido)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(key{1000})
+	fmt.Println(pedido.Id)
+
+}
+
+func getEstadoPedido()  {
+
+}
+
+
+func getEstadoRepartidor(){
+
+}
+
+func handle()  {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/crear_pedido",crearPedido).Methods("POST")
+	http.ListenAndServe(":8081", router)
+
+}
+
+
+
+func main()  {
+
+
+	handle()
+}
+
+
+----------
+
+func crearPedido(w http.ResponseWriter, r *http.Request)  {
+
+	d := data{}
+	err := json.NewDecoder(r.Body).Decode(&d)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+
+	array [index] = d
+	index++
+
+	m := message{
+		"data realizado",
+	}
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(message{"data realizado"})
+	fmt.Println(m.message)
+
+}
+
+func getEstadoPedido()  {
+
+
+
+}
+
+
+func getEstadoRepartidor(){
+
+}
+
+func handle()  {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/crear_pedido",crearPedido).Methods("POST")
+	http.ListenAndServe(":8081", router)
+
+}
+
+
+--
+
+package main
+
+import ( "./estructura"
+	"fmt"
+)
+
+
+var index = 0
+
+func main()  {
+	nuevo := estructura.Message{}
+
+
+	fmt.Println(nuevo)
+}
+
+---------
+--body pedido
+{
+ "idPedido":1,
+ "idRestaurante":1,
+ "nombreRestaurante": "restaurante 1",
+ "idCliente": 1,
+ "nombreCliente": "cliente 1",
+ "idRepartidor": -1,
+ "nombreRepartidor": "none",
+ "estadoRepartidor" : -1,
+ "estadoPedido" : 0,
+ "descripcion": "menu1"
+}
+
+--body estadoPedido
+
+{
+    "id": 0
+}
+
+--
+
+package main
+
+import ( "../estructura"
+	"encoding/json"
+	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
+)
+
+
+var index = 0
+var hash = make( map[int]estructura.Data )
+
+
+
+func crearPedido(w http.ResponseWriter, r *http.Request)  {
+
+	d := estructura.Data{}
+	err := json.NewDecoder(r.Body).Decode(&d)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	hash[index]=d
+	index++
+
+	m := estructura.Message{
+		"data realizado",
+	}
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(estructura.Message{"pedido realizado"})
+	fmt.Println(m.Message)
+
+}
+
+
+
+
+func getEstadoPedido(w http.ResponseWriter, r *http.Request)  {
+
+	d:=estructura.StrucGenerico{}
+	err := json.NewDecoder(r.Body).Decode(&d)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	m:= estructura.Message{}
+
+
+
+	status, is_val_present:= hash[d.Id]
+
+	if !is_val_present{
+		m.Message="el pedido no existe"
+		http.Error(w,"{\"message\":\"pedido no encontrado\"}",500)
+		return
+	}
+
+	if m.Message = "pedido pendiente"; status.EstadoPedido == 1 {
+		m.Message = "pedido compleatdo"
+	}
+
+	json.NewEncoder(w).Encode(m)
+	fmt.Println(m.Message)
+}
+
+
+func getEstadpRepartidor(w http.ResponseWriter, r *http.Request)  {
+
+	d:=estructura.StrucGenerico{}
+	err := json.NewDecoder(r.Body).Decode(&d)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type","application/json")
+	m:= estructura.Message{}
+
+
+
+	status, is_val_present:= hash[d.Id]
+
+	if !is_val_present{
+		m.Message="el pedido no existe"
+		http.Error(w,"{\"message\":\"pedido no encontrado\"}",500)
+		return
+	}
+
+	if m.Message = "repartidor recogiendo la orden"; status.EstadoPedido == 1 {
+		m.Message = "repartidor en camino con la orden"
+	}
+
+	json.NewEncoder(w).Encode(m)
+	fmt.Println(m.Message)
+}
+
+func handle()  {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/crear_pedido",crearPedido).Methods("POST")
+	router.HandleFunc("/estado_pedido",getEstadoPedido).Methods("GET")
+	router.HandleFunc("/estado_repartidor",getEstadpRepartidor).Methods("GET")
+
+	http.ListenAndServe(":8081", router)
+
+}
+
+
+func main()  {
+
+	handle()
+
+}
+
+
+func (m *Message) NewMesaage (mes string) *Message {
+	return &Message{mes}
+}
