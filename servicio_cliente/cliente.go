@@ -5,6 +5,7 @@ import (
 	"../estructura"
 	"./peticiones_cliente"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"math/rand"
 	"net/http"
@@ -102,7 +103,7 @@ func handle() {
 
 
 func main()  {
-
+	 fmt.Println("8080")
 	 peticiones_cliente.HashPedido = make(map[int]int)
 	 peticiones_cliente.Codigo  = -1
 	 peticiones_cliente.IdPedido = -1

@@ -6,7 +6,15 @@ Andrea Nicte Vicente Campos
 
 # Practica 3
 
-Link funcionalidad: https://youtu.be/92HZeT6-V3A
+Link funcionalidad: https://youtu.be/c66NjGqbd3k
+
+
+
+#### Flujo de informacion 
+
+![im1](im1.png)
+
+
 
 #### Structs que ayudaron a mantener la data en memoria:
 
@@ -69,6 +77,10 @@ type JSONMessageGeneric struct {
 
 
 ### 9 endpoints - cada servicio en un puerto diferente
+
+- 8081 - restaurante
+- 8082 - repartidor
+- 8080 - cliente
 
 Restaurante 
 
