@@ -40,8 +40,8 @@ func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
+	//se retorna un json con el id del pedido
 	hashPedido[idPedido]=&data
-//simulacionEntregaPedidoAlRepartidor(idPedido)
 	m.Message =  "pedidio realizado"
 	m.Id = idPedido
 	json.NewEncoder(w).Encode(m)
@@ -154,7 +154,7 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 func handle()  {
 
 	router := mux.NewRouter()
-	router.HandleFunc("/crear_pedido",recibir_pedidio).Methods("POST")
+	router.HandleFunc("/recibir_pedido",recibir_pedidio).Methods("POST")
 	router.HandleFunc("/estado_pedido",etado_pedido).Methods("GET")
 	router.HandleFunc("/avisar_pedido_listo",avisar_pedido_listo).Methods("POST")
 	http.ListenAndServe(":8081", router)
@@ -175,7 +175,7 @@ func main()  {
 	hashCliente[1]=&estructura.Cliente{1,"cliente2"}
 	hashCliente[2]=&estructura.Cliente{2,"cliente2"}
 
-
+	println("escuchando el puerto 8081")
 	handle()
 
 

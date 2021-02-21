@@ -60,14 +60,14 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 	pedido,existePedido := hashPedido[data.Id]
 
 	if !existePedido{
-		mensaje_error,_ := json.Marshal(estructura.JSONMessageGeneric{"Ese pedido no existe",-1})
+		mensaje_error,_ := json.Marshal(estructura.JSONMessageGeneric{"El repartidor sigue en espera del pedido",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		return
 	}
 
 
 	if pedido.EstadoRepartidor == -1{
-		m.Message =" el pedido ya fue entreagado"
+		m.Message =" el pedido ya fue entreagado "
 	} else if estadoRepartidor == 1 && pedido.EstadoRepartidor == 0 {
 		m.Message="el reapartidor esta ocupado pero no con tu pedido"
 
@@ -132,6 +132,7 @@ func handle()  {
 
 func main (){
 
+	println("escuchando el puerto 8082")
 	handle()
 
 }
