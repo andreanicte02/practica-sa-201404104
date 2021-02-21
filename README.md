@@ -13,7 +13,7 @@ Link funcionalidad: https://youtu.be/92HZeT6-V3A
 ```golang
 //struct que nos va ayudar a simular los menus en memoria
 type Menu struct {
-	Id int
+	Id int			
 	Descripcion string
 }
 
@@ -68,9 +68,9 @@ type JSONMessageGeneric struct {
 
 
 
-### Función que permite manejar los endpoints de los servicios:
+### 9 endpoints - cada servicio en un puerto diferente
 
-Restaurante
+Restaurante 
 
 ```go
 func handle()  {
@@ -86,7 +86,7 @@ func handle()  {
 
 Reapartidor
 
-```
+```go
 func handle()  {
 
 	router := mux.NewRouter()
@@ -96,6 +96,22 @@ func handle()  {
 	http.ListenAndServe(":8082", router)
 
 }
+```
+
+
+
+Cliente
+
+```go
+func handle() {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/solicitar_pedido",solicitar_pedido).Methods("POST")
+	router.HandleFunc("/get_estado_restaurante",get_estado_restaurante).Methods("GET")
+	router.HandleFunc("/get_estado_repartidor",get_estado_repartidor).Methods("GET")
+	http.ListenAndServe(":8080", router)
+}
+
 ```
 
 
@@ -245,7 +261,7 @@ Ejemplo:
  */
 ```
 
-
+Funcion que envia la peticiones a otro servicio
 
 ```go
 func solicitar_pedido(pedido *estructura.Pedido){
@@ -275,5 +291,34 @@ func solicitar_pedido(pedido *estructura.Pedido){
 
 
 }
+```
+
+
+
+Servicio para solicitar pedido
+
+Solo recibe el id del cliente, el menu se genera random, y estado del pedido se encuentra pendiende. 
+
+```go
+func solicitar_pedido(w http.ResponseWriter, r *http.Request)  {
+
+
+	data:= estructura.JSONGenerico{}
+
+	m:= estructura.JSONMessageGeneric{}
+	w.Header().Set("Content-Type","application/json")
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	m= peticiones_cliente.Peticion_solicitar_pedido(&estructura.Pedido{menuRandom(),data.Id,0})
+	peticiones_cliente.IdPedido = m.Id
+	json.NewEncoder(w).Encode(m)
+	estructura.LogSalida(data,m)
+
 ```
 

@@ -1,5 +1,6 @@
 package estructura
 
+import "fmt"
 
 //struct que nos va ayudar a simular los menus en memoria
 type Menu struct {
@@ -36,6 +37,14 @@ type PedidoRepartidor struct {
 
 
 }
+
+func LogSalida(data JSONGenerico, m JSONMessageGeneric)  {
+	fmt.Println("data recibida: ")
+	fmt.Println(data)
+	fmt.Println("respuesta de la solicitud de pedido:")
+	fmt.Println(m)
+}
+
 
 
 
