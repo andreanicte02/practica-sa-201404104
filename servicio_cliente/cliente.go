@@ -15,7 +15,26 @@ import (
 
 var hashPedido = make(map[int]int)
 var codigo int = -1
+var idPedido = -1
 
+/*
+	req,err :=  http.NewRequest(1, 2, 3)
+		primer argumento, se indica el metodo a utilizar POST | GET | PUT etc
+		segundo argumetno, se indica el url de la api a consumir
+		tercer agumento, se indica el contenido del pody de la peticion
+
+*/
+
+/*
+	agregar informacion al header de una peticion
+	req.Header.Add(1, 2)
+		primer argumento indica el tipo que se va agregar
+		segundo argument indica el valor
+
+*/
+
+
+//funcion para solicitar pedido
 func solicitar_pedido(pedido *estructura.Pedido){
 	
 	dataRequest,_:= json.Marshal(pedido)
@@ -35,6 +54,7 @@ func solicitar_pedido(pedido *estructura.Pedido){
 	decoder.Decode(&data)
 
 	hashPedido[data.Id]=data.Id
+	idPedido = data.Id
 	fmt.Println("...respuesta")
 	fmt.Println(data)
 	fmt.Println("id del pedido:")
@@ -43,7 +63,7 @@ func solicitar_pedido(pedido *estructura.Pedido){
 
 }
 
-
+//funcion para solicitar pedido al restaurante
 func solicitar_estado_restaurante(jsonGeneric *estructura.JSONGenerico){
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
@@ -69,7 +89,7 @@ func solicitar_estado_restaurante(jsonGeneric *estructura.JSONGenerico){
 
 }
 
-
+//funcion para solicitar pedido al repartidor
 func estado_repartidor(jsonGeneric *estructura.JSONGenerico){
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
@@ -112,7 +132,7 @@ func handle() {
 func menu(){
 
 	option:=-1
-	idPedido:= -1
+
 	for true {
 
 
@@ -132,8 +152,7 @@ func menu(){
 			break
 
 		case 2:
-			println("Ingrese.....codigo_pedido:")
-			fmt.Scanf("%d", &idPedido)
+
 
 			println(".....solicitando estado restaurante")
 			solicitar_estado_restaurante(&estructura.JSONGenerico{idPedido})
@@ -142,8 +161,7 @@ func menu(){
 
 		case 3:
 
-			println("Ingrese.....codigo_pedido:")
-			fmt.Scanf("%d", &idPedido)
+
 
 			println(".....solicitando estado repartidor")
 			estado_repartidor(&estructura.JSONGenerico{idPedido})

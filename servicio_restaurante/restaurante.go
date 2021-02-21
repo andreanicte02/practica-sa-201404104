@@ -11,12 +11,19 @@ import (
 	"net/http"
 )
 
+//se usan hash para llevar el control de clientes, pedido, menu en memoria
 var hashCliente = make(map[int]*estructura.Cliente)
 var hashPedido = make(map[int]*estructura.Pedido)
 var hashMenu = make(map[int]*estructura.Menu)
+//contador globla y unico que va llevar el id de los pedidos
 var idPedido = 0
 
+/**
+	w -> indica el contenido de la respuesta
+	r -> indica el contenido de la solicitud
+*/
 
+//funcion que recibe el pedido y lo guarda en memoria, recibe una estructura de pedido en el body
 func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.Pedido{}
@@ -51,7 +58,8 @@ func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 
 
 }
-//recibimos el id del cliente
+
+////funcion que recibe el id del pedido y devuelve el estado del pedido
 func etado_pedido(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.JSONGenerico{}
@@ -90,6 +98,7 @@ func etado_pedido(w http.ResponseWriter, r *http.Request)  {
 
 }
 
+////funcion que recibe el id del pedido y indica en memoria y al repartidor que el pedido ya se puede recoger
 func avisar_pedido_listo(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.JSONGenerico{}
@@ -121,7 +130,7 @@ func avisar_pedido_listo(w http.ResponseWriter, r *http.Request)  {
 
 
 }
-
+//fncion que simula la comunicacion entre el servicio del repartidor y el restaruante
 func simulacionEntregaPedidoAlRepartidor(idPedido int){
 
 
@@ -130,8 +139,6 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 	if !existePedido || pedido.IdEstado==1{
 		return
 	}
-
-
 
 	data,_:= json.Marshal(estructura.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido,0})
 	req,err := http.NewRequest("POST", "http://localhost:8082/recibir_pedidio", bytes.NewBuffer(data))
@@ -151,6 +158,8 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 
 }
 
+
+//funcion que expone los servicios del restaurante
 func handle()  {
 
 	router := mux.NewRouter()

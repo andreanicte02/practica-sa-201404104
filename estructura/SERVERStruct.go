@@ -1,24 +1,19 @@
 package estructura
 
 
-type Restaurante struct {
-	Id int
-	Nombre string
-	Menus [3]Menu
-}
-
+//struct que nos va ayudar a simular los menus en memoria
 type Menu struct {
 	Id int
 	Descripcion string
 }
 
-
+//struct que nos va ayudar a simular los clientes en memoria
 type Cliente struct {
 	Id int
 	Nombre string
 }
 
-
+//struct que va ayudar a almacenar la informacion de pedidos en memoria del restaurante
 type Pedido struct {
 
 	IdMenu int `json:"idMenu"`
@@ -28,6 +23,8 @@ type Pedido struct {
 
 }
 
+
+//struct que va ayudar a almacenar la informacion de pedidos en memoria del repartidor
 type PedidoRepartidor struct {
 
 	IdMenu int `json:"idMenu"`

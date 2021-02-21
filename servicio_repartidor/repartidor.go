@@ -8,9 +8,20 @@ import (
 	"../estructura"
 )
 
-var estadoRepartidor int =0 //uno ocupado 2 desocupado
+
+
+var estadoRepartidor int =0 //-1 indica que no tiene pedido pendiente, 0 que esta en caminio y 1 que ya se entrego
+//se isa una hash en el lado del reapartidor para llevarla en memoria
 var hashPedido = make(map[int]*estructura.PedidoRepartidor)
 
+/**
+	w -> indica el contenido de la respuesta
+	r -> indica el contenido de la solicitud
+*/
+
+
+//servicio que recibe el pedido, indica al reapartidor que tiene pedidos que entregar
+//recibe una json con la estrucutra de PedidoRepartidor y actualiza el estado
 func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.PedidoRepartidor{}
@@ -42,7 +53,8 @@ func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
 	estadoRepartidor = 1
 }
 
-
+//Recibe un json generico, con el id del pedido
+//Rregresa el estado del pedido
 func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.JSONGenerico{}
@@ -62,6 +74,8 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 	if !existePedido{
 		mensaje_error,_ := json.Marshal(estructura.JSONMessageGeneric{"El repartidor sigue en espera del pedido",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
+		fmt.Print("pedido recibida: ")
+		fmt.Println(data)
 		return
 	}
 
@@ -86,6 +100,9 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 
 }
 
+
+//Recie un struct de pedidoRepartidor, solo para obtener el id del pedido
+//actualiza el estado del repartidor en relacion con el pedido
 func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 
 	data:= estructura.PedidoRepartidor{}
@@ -104,6 +121,8 @@ func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 	if !existePedido{
 		mensaje_error,_ := json.Marshal(estructura.JSONMessageGeneric{"Ese pedido no existe",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
+		fmt.Print("pedido recibida: ")
+		fmt.Println(data)
 		return
 	}
 
@@ -119,7 +138,7 @@ func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 
 }
 
-
+//funcion que expone los servicios del repartidor
 func handle()  {
 
 	router := mux.NewRouter()
