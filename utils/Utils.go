@@ -86,6 +86,7 @@ type ServicioData struct {
 	Nombre string
 	Ruta string
 	Padre string
+	Method string
 
 
 }

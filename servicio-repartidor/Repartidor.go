@@ -22,7 +22,7 @@ r -> indica el contenido de la solicitud
 
 //servicio que recibe el pedido, indica al reapartidor que tiene pedidos que entregar
 //recibe una json con la estrucutra de PedidoRepartidor y actualiza el estado
-func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
+func recibirPedido(w http.ResponseWriter, r *http.Request)  {
 
 	data:= utils.PedidoRepartidor{}
 
@@ -55,7 +55,7 @@ func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
 
 //Recibe un json generico, con el id del pedido
 //Rregresa el estado del pedido
-func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
+func informarEstadoCliente(w http.ResponseWriter, r *http.Request)  {
 
 	data:= utils.JSONGenerico{}
 
@@ -103,7 +103,7 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 
 //Recie un struct de pedidoRepartidor, solo para obtener el id del pedido
 //actualiza el estado del repartidor en relacion con el pedido
-func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
+func marcarPedido(w http.ResponseWriter, r *http.Request)  {
 
 	data:= utils.PedidoRepartidor{}
 	m:= utils.JSONMessageGeneric{}
@@ -142,14 +142,18 @@ func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 func handle()  {
 
 	router := mux.NewRouter()
-	router.HandleFunc("/recibir_pedidio",recibir_pedido).Methods("POST")
-	router.HandleFunc("/informar_estado_cliente",informar_estado_cliente).Methods("GET")
-	router.HandleFunc("/marcar_pedido",marcar_pedido).Methods("POST")
+	router.HandleFunc("/recibir_pedidio",recibirPedido).Methods("POST")
+	router.HandleFunc("/informar_estado_cliente",informarEstadoCliente).Methods("GET")
+	router.HandleFunc("/marcar_pedido",marcarPedido).Methods("POST")
 	http.ListenAndServe(":8082", router)
 
 }
 
 func main (){
+
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "recibir_pedidio","/recibir_pedidio","repartidor","POST"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "marcar_pedido","/marcar_pedido","repartidor","POST"}, "POST")
 
 	println("escuchando el puerto 8082")
 	handle()

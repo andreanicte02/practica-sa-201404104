@@ -105,9 +105,9 @@ func handle() {
 
 func main()  {
 
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente","POST"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente","GET"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente","GET"}, "POST")
 
 	fmt.Println("Escuhando puerto 8080")
 	peticiones_cliente.HashPedido = make(map[int]int)

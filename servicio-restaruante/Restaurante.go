@@ -176,6 +176,11 @@ func handle()  {
 
 func main()  {
 
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "recibir_pedido","/recibir_pedido","restaurante","POST"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "avisar_pedido_listo","/avisar_pedido_listo","restaurante","POST"}, "POST")
+
+
 	hashMenu[0]=&utils.Menu{0,"menu1"}
 	hashMenu[1]=&utils.Menu{1,"menu1"}
 	hashMenu[2]=&utils.Menu{2,"menu1"}
