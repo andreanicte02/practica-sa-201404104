@@ -155,3 +155,24 @@ func PeticionClienteGeneric(servicio *JSONGenerico, method string, host string, 
 	return data
 
 }
+
+func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServicio string) JSONMessageGeneric {
+
+	dataRequest, _ := json.Marshal(servicio)
+	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
+	fmt.Println("info. recibida")
+	fmt.Println(data)
+
+	return data
+
+}

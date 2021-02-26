@@ -37,7 +37,7 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONMessageGeneric{}
+	data:= utils.JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -49,25 +49,80 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,data.Message,"solicitar_pedido")
+	padre, existePadre := utils.GetDataService(servicios,"cliente","solicitar_pedido")
+	if !existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
 
-	var m utils.JSONMessageGeneric
+	dataRespuesta:= utils.PeticionClienteGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 
-	if existePadre {
-		m = utils.JSONMessageGeneric{"Si existe el servicio", 1}
-	}else{
-		m = utils.JSONMessageGeneric{"no existe el servicio", 0}
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+}
+
+//endpoint 2
+
+func RestauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.Pedido{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: ")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"restaurante","recibir_pedido")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
 	}
 
 
-	dataRespuesta:= utils.PeticionClienteGeneric(&utils.JSONGenerico{data.Id},padre.Method,padre.Host, padre.Ruta)
-
-	fmt.Println("data recibida:")
-	fmt.Println(dataRespuesta)
-
+	dataRespuesta:= utils.PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
-	json.NewEncoder(w).Encode(m)
+	json.NewEncoder(w).Encode(dataRespuesta)
+
 }
+
+
+//endpoint 3
+func ClienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.Pedido{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: ")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"restaurante","recibir_pedido")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
+
+
+	dataRespuesta:= utils.PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+
+}
+
 
 
 func handle()  {
@@ -75,6 +130,7 @@ func handle()  {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/cliente_solicitar_pedido",clienteSolicitarPedido).Methods("POST")
+	router.HandleFunc("/restaurante_recibir_pedido",RestauranteRecibirPedido).Methods("POST")
 	router.HandleFunc("/registrar_microservicio",registrarMicroServicio).Methods("POST")
 	http.ListenAndServe(":8085", router)
 

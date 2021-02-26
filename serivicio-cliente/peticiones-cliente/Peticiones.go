@@ -29,7 +29,7 @@ var IdPedido = -1
 func PeticionSolicitarPedido(pedido *utils.Pedido) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(pedido)
-	req,err := http.NewRequest("POST", "http://localhost:8081/recibir_pedido", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("POST", "http://localhost:8085/restaurante_recibir_pedido", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}

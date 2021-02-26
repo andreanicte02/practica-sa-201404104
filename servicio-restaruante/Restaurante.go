@@ -55,6 +55,7 @@ func recibirPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Print("data recibida: ")
 	fmt.Println(data)
 	idPedido ++
+	fmt.Println("Pedido registrado en el servicio de restaurante")
 
 
 }
