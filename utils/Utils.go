@@ -149,9 +149,6 @@ func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rut
 
 	defer resp.Body.Close()
 	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
-	fmt.Println("info. recibida")
-	fmt.Println(data)
-
 	return data
 
 }
@@ -170,8 +167,6 @@ func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServi
 
 	defer resp.Body.Close()
 	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
-	fmt.Println("info. recibida")
-	fmt.Println(data)
 
 	return data
 
