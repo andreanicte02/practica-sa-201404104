@@ -1,10 +1,9 @@
 package peticiones_cliente
 
 import (
-	"../../models"
+	"../../utils"
 	"bytes"
 	"encoding/json"
-	"io"
 	"log"
 	"net/http"
 )
@@ -27,7 +26,7 @@ var IdPedido = -1
 
 
 //funcion para solicitar pedido
-func Peticion_solicitar_pedido(pedido *models.Pedido) models.JSONMessageGeneric{
+func PeticionSolicitarPedido(pedido *utils.Pedido) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(pedido)
 	req,err := http.NewRequest("POST", "http://localhost:8081/recibir_pedido", bytes.NewBuffer(dataRequest))
@@ -41,7 +40,7 @@ func Peticion_solicitar_pedido(pedido *models.Pedido) models.JSONMessageGeneric{
 
 	defer resp.Body.Close()
 
-	var data = decodificador(resp.Body,&models.JSONMessageGeneric{"",0})
+	var data = utils.Decodificador(resp.Body,&utils.JSONMessageGeneric{"",0})
 
 	HashPedido[data.Id]=data.Id
 	IdPedido = data.Id
@@ -51,7 +50,7 @@ func Peticion_solicitar_pedido(pedido *models.Pedido) models.JSONMessageGeneric{
 }
 
 //funcion para solicitar pedido al restaurante
-func Peticion_solicitar_estado_restaurante(jsonGeneric *models.JSONGenerico) models.JSONMessageGeneric{
+func PeticionSolicitarEstadoRestaurante(jsonGeneric *utils.JSONGenerico) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
 	req,err := http.NewRequest("GET", "http://localhost:8081/estado_pedido", bytes.NewBuffer(dataRequest))
@@ -65,7 +64,7 @@ func Peticion_solicitar_estado_restaurante(jsonGeneric *models.JSONGenerico) mod
 
 	defer resp.Body.Close()
 
-	var data = decodificador(resp.Body,&models.JSONMessageGeneric{"",0})
+	var data = utils.Decodificador(resp.Body,&utils.JSONMessageGeneric{"",0})
 
 	HashPedido[data.Id]=data.Id
 
@@ -77,7 +76,7 @@ func Peticion_solicitar_estado_restaurante(jsonGeneric *models.JSONGenerico) mod
 }
 
 //funcion para solicitar pedido al repartidor
-func Peticion_estado_repartidor(jsonGeneric *models.JSONGenerico) models.JSONMessageGeneric{
+func PeticionEstadoRepartidor(jsonGeneric *utils.JSONGenerico) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
 	req,err := http.NewRequest("GET", "http://localhost:8082/informar_estado_cliente", bytes.NewBuffer(dataRequest))
@@ -92,15 +91,10 @@ func Peticion_estado_repartidor(jsonGeneric *models.JSONGenerico) models.JSONMes
 	defer resp.Body.Close()
 
 
-	var data = decodificador(resp.Body,&models.JSONMessageGeneric{"",0})
+	var data = utils.Decodificador(resp.Body,&utils.JSONMessageGeneric{"",0})
 
 	HashPedido[data.Id]=data.Id
 	return data
 
 }
 
-func decodificador(body io.ReadCloser, data *models.JSONMessageGeneric) models.JSONMessageGeneric  {
-	decoder:= json.NewDecoder(body)
-	decoder.Decode(data)
-	return *data
-}

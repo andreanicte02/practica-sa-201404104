@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../models"
+	"../utils"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -12,9 +12,9 @@ import (
 )
 
 //se usan hash para llevar el control de clientes, pedido, menu en memoria
-var hashCliente = make(map[int]*models.Cliente)
-var hashPedido = make(map[int]*models.Pedido)
-var hashMenu = make(map[int]*models.Menu)
+var hashCliente = make(map[int]*utils.Cliente)
+var hashPedido = make(map[int]*utils.Pedido)
+var hashMenu = make(map[int]*utils.Menu)
 //contador globla y unico que va llevar el id de los pedidos
 var idPedido = 0
 
@@ -24,10 +24,10 @@ r -> indica el contenido de la solicitud
 */
 
 //funcion que recibe el pedido y lo guarda en memoria, recibe una estructura de pedido en el body
-func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
+func recibirPedido(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.Pedido{}
-	m:= models.JSONMessageGeneric{}
+	data:= utils.Pedido{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -41,7 +41,7 @@ func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 
 	if !existeCliente || !existeMenu{
 
-		mensaje_error,_ := json.Marshal(models.JSONMessageGeneric{"El menu o el cliente no existen",-1})
+		mensaje_error,_ := json.Marshal(utils.JSONMessageGeneric{"El menu o el cliente no existen",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		return
 	}
@@ -60,10 +60,10 @@ func recibir_pedidio(w http.ResponseWriter, r *http.Request)  {
 }
 
 ////funcion que recibe el id del pedido y devuelve el estado del pedido
-func etado_pedido(w http.ResponseWriter, r *http.Request)  {
+func estadoPedido(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.JSONGenerico{}
-	m:= models.JSONMessageGeneric{}
+	data:= utils.JSONGenerico{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil{
@@ -75,7 +75,7 @@ func etado_pedido(w http.ResponseWriter, r *http.Request)  {
 
 	if !existePedido{
 
-		mensaje_error,_ := json.Marshal(models.JSONMessageGeneric{"Ese pedido no existe",-1})
+		mensaje_error,_ := json.Marshal(utils.JSONMessageGeneric{"Ese pedido no existe",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		return
 
@@ -99,10 +99,10 @@ func etado_pedido(w http.ResponseWriter, r *http.Request)  {
 }
 
 ////funcion que recibe el id del pedido y indica en memoria y al repartidor que el pedido ya se puede recoger
-func avisar_pedido_listo(w http.ResponseWriter, r *http.Request)  {
+func avisarPedidoListo(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.JSONGenerico{}
-	m:= models.JSONMessageGeneric{}
+	data:= utils.JSONGenerico{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil{
@@ -114,7 +114,7 @@ func avisar_pedido_listo(w http.ResponseWriter, r *http.Request)  {
 
 	if !existePedido{
 
-		mensaje_error,_ := json.Marshal(models.JSONMessageGeneric{"Ese pedido no existe",-1})
+		mensaje_error,_ := json.Marshal(utils.JSONMessageGeneric{"Ese pedido no existe",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		return
 
@@ -140,7 +140,7 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 		return
 	}
 
-	data,_:= json.Marshal(models.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido,0})
+	data,_:= json.Marshal(utils.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido,0})
 	req,err := http.NewRequest("POST", "http://localhost:8082/recibir_pedidio", bytes.NewBuffer(data))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
@@ -163,9 +163,9 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 func handle()  {
 
 	router := mux.NewRouter()
-	router.HandleFunc("/recibir_pedido",recibir_pedidio).Methods("POST")
-	router.HandleFunc("/estado_pedido",etado_pedido).Methods("GET")
-	router.HandleFunc("/avisar_pedido_listo",avisar_pedido_listo).Methods("POST")
+	router.HandleFunc("/recibir_pedido",recibirPedido).Methods("POST")
+	router.HandleFunc("/estado_pedido",estadoPedido).Methods("GET")
+	router.HandleFunc("/avisar_pedido_listo",avisarPedidoListo).Methods("POST")
 	http.ListenAndServe(":8081", router)
 
 }
@@ -176,13 +176,13 @@ func handle()  {
 
 func main()  {
 
-	hashMenu[0]=&models.Menu{0,"menu1"}
-	hashMenu[1]=&models.Menu{1,"menu1"}
-	hashMenu[2]=&models.Menu{2,"menu1"}
+	hashMenu[0]=&utils.Menu{0,"menu1"}
+	hashMenu[1]=&utils.Menu{1,"menu1"}
+	hashMenu[2]=&utils.Menu{2,"menu1"}
 
-	hashCliente[0]=&models.Cliente{0,"cliente1"}
-	hashCliente[1]=&models.Cliente{1,"cliente2"}
-	hashCliente[2]=&models.Cliente{2,"cliente2"}
+	hashCliente[0]=&utils.Cliente{0,"cliente1"}
+	hashCliente[1]=&utils.Cliente{1,"cliente2"}
+	hashCliente[2]=&utils.Cliente{2,"cliente2"}
 
 	println("escuchando el puerto 8081")
 	handle()

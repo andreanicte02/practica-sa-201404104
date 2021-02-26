@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"../models"
+	"../utils"
 )
 
 
 
 var estadoRepartidor int =0 //-1 indica que no tiene pedido pendiente, 0 que esta en caminio y 1 que ya se entrego
 //se isa una hash en el lado del reapartidor para llevarla en memoria
-var hashPedido = make(map[int]*models.PedidoRepartidor)
+var hashPedido = make(map[int]*utils.PedidoRepartidor)
 
 /**
 w -> indica el contenido de la respuesta
@@ -24,9 +24,9 @@ r -> indica el contenido de la solicitud
 //recibe una json con la estrucutra de PedidoRepartidor y actualiza el estado
 func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.PedidoRepartidor{}
+	data:= utils.PedidoRepartidor{}
 
-	m:= models.JSONMessageGeneric{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -57,9 +57,9 @@ func recibir_pedido(w http.ResponseWriter, r *http.Request)  {
 //Rregresa el estado del pedido
 func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.JSONGenerico{}
+	data:= utils.JSONGenerico{}
 
-	m:= models.JSONMessageGeneric{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -72,7 +72,7 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 	pedido,existePedido := hashPedido[data.Id]
 
 	if !existePedido{
-		mensaje_error,_ := json.Marshal(models.JSONMessageGeneric{"El repartidor sigue en espera del pedido",-1})
+		mensaje_error,_ := json.Marshal(utils.JSONMessageGeneric{"El repartidor sigue en espera del pedido",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		fmt.Print("pedido recibida: ")
 		fmt.Println(data)
@@ -105,8 +105,8 @@ func informar_estado_cliente(w http.ResponseWriter, r *http.Request)  {
 //actualiza el estado del repartidor en relacion con el pedido
 func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 
-	data:= models.PedidoRepartidor{}
-	m:= models.JSONMessageGeneric{}
+	data:= utils.PedidoRepartidor{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -119,7 +119,7 @@ func marcar_pedido(w http.ResponseWriter, r *http.Request)  {
 	pedido,existePedido := hashPedido[data.IdPedido]
 
 	if !existePedido{
-		mensaje_error,_ := json.Marshal(models.JSONMessageGeneric{"Ese pedido no existe",-1})
+		mensaje_error,_ := json.Marshal(utils.JSONMessageGeneric{"Ese pedido no existe",-1})
 		http.Error(w, string(mensaje_error), http.StatusBadRequest)
 		fmt.Print("pedido recibida: ")
 		fmt.Println(data)

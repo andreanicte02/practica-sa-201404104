@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../models"
+	"../utils"
 	"./peticiones-cliente"
 	"encoding/json"
 	"fmt"
@@ -19,12 +19,12 @@ func menuRandom()  int {
 }
 
 
-func solicitar_pedido(w http.ResponseWriter, r *http.Request)  {
+func solicitarPedido(w http.ResponseWriter, r *http.Request)  {
 
 
-	data:= models.JSONGenerico{}
+	data:= utils.JSONGenerico{}
 
-	m:= models.JSONMessageGeneric{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -34,19 +34,19 @@ func solicitar_pedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	m= peticiones_cliente.Peticion_solicitar_pedido(&models.Pedido{menuRandom(),data.Id,0})
+	m= peticiones_cliente.PeticionSolicitarPedido(&utils.Pedido{menuRandom(),data.Id,0})
 	peticiones_cliente.IdPedido = m.Id
 	json.NewEncoder(w).Encode(m)
-	models.LogSalida(data,m)
+	utils.LogSalida(data,m)
 
 }
 
-func get_estado_restaurante(w http.ResponseWriter, r *http.Request)  {
+func getEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 
 
-	data:= models.JSONGenerico{}
+	data:= utils.JSONGenerico{}
 
-	m:= models.JSONMessageGeneric{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -56,21 +56,21 @@ func get_estado_restaurante(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	m= peticiones_cliente.Peticion_solicitar_estado_restaurante(&data)
+	m= peticiones_cliente.PeticionSolicitarEstadoRestaurante(&data)
 	json.NewEncoder(w).Encode(m)
 
-	models.LogSalida(data,m)
+	utils.LogSalida(data,m)
 
 
 
 }
 
-func get_estado_repartidor(w http.ResponseWriter, r *http.Request)  {
+func getEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 
 
-	data:= models.JSONGenerico{}
+	data:= utils.JSONGenerico{}
 
-	m:= models.JSONMessageGeneric{}
+	m:= utils.JSONMessageGeneric{}
 	w.Header().Set("Content-Type","application/json")
 
 	err := json.NewDecoder(r.Body).Decode(&data)
@@ -80,9 +80,9 @@ func get_estado_repartidor(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	m= peticiones_cliente.Peticion_estado_repartidor(&data)
+	m= peticiones_cliente.PeticionEstadoRepartidor(&data)
 	json.NewEncoder(w).Encode(m)
-	models.LogSalida(data,m)
+	utils.LogSalida(data,m)
 
 
 
@@ -93,16 +93,23 @@ func get_estado_repartidor(w http.ResponseWriter, r *http.Request)  {
 func handle() {
 
 	router := mux.NewRouter()
-	router.HandleFunc("/solicitar_pedido",solicitar_pedido).Methods("POST")
-	router.HandleFunc("/get_estado_restaurante",get_estado_restaurante).Methods("GET")
-	router.HandleFunc("/get_estado_repartidor",get_estado_repartidor).Methods("GET")
+	router.HandleFunc("/solicitar_pedido",solicitarPedido).Methods("POST")
+	router.HandleFunc("/get_estado_restaurante",getEstadoRestaurante).Methods("GET")
+	router.HandleFunc("/get_estado_repartidor",getEstadoRepartidor).Methods("GET")
 	http.ListenAndServe(":8080", router)
 }
 
 
 
+
+
 func main()  {
-	fmt.Println("8080")
+
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente"}, "POST")
+
+	fmt.Println("Escuhando puerto 8080")
 	peticiones_cliente.HashPedido = make(map[int]int)
 	peticiones_cliente.Codigo  = -1
 	peticiones_cliente.IdPedido = -1
