@@ -244,12 +244,43 @@ func restaurantePedidoListo(w http.ResponseWriter, r *http.Request)  {
 
 }
 
+//endpoint 8
+func repartidorRecibirPedido(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.PedidoRepartidor{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: de repartidor de recibir_pedidio")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"repartidor","recibir_pedidio")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
+
+
+	dataRespuesta:= utils.PeticionRepartodpr(&data,padre.Method,padre.Host, padre.Ruta)
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+
+}
 
 
 func handle()  {
 
 	router := mux.NewRouter()
 
+
+	router.HandleFunc("/repartidor_recibir_pedidio",repartidorRecibirPedido).Methods("POST")
 	router.HandleFunc("/restaurante_pedido_listo",restaurantePedidoListo).Methods("POST")
 	router.HandleFunc("/repartidor_estado",repartidorEstado).Methods("GET")
 	router.HandleFunc("/cliente_estado_repartidor",clienteEstadoRepartidor).Methods("GET")

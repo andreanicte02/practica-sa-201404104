@@ -142,7 +142,7 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 	}
 
 	data,_:= json.Marshal(utils.PedidoRepartidor{pedido.IdMenu,pedido.IdCliente, pedido.IdEstado, hashMenu[pedido.IdMenu].Descripcion,idPedido,0})
-	req,err := http.NewRequest("POST", "http://localhost:8082/recibir_pedidio", bytes.NewBuffer(data))
+	req,err := http.NewRequest("POST", "http://localhost:8085/repartidor_recibir_pedidio", bytes.NewBuffer(data))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 	client := &http.Client{}
