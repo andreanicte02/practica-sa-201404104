@@ -63,7 +63,7 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 
 //endpoint 2
 
-func RestauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
+func restauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
@@ -124,7 +124,7 @@ func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 }
 
 
-//endpoint 3
+//endpoint 4
 func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 
 
@@ -154,15 +154,46 @@ func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 
 }
 
+//endpoint 5
+func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.JSONGenerico{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: ")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"cliente","get_estado_repartidor")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
+
+
+	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+
+}
+
 
 
 func handle()  {
 
 	router := mux.NewRouter()
+	router.HandleFunc("/cliente_estado_repartidor",clienteEstadoRepartidor).Methods("GET")
 	router.HandleFunc("/restaurante_estado_restaurante",restauranteEstadoPedido).Methods("GET")
 	router.HandleFunc("/cliente_estado_restaurante",clienteEstadoRestaurante).Methods("GET")
 	router.HandleFunc("/cliente_solicitar_pedido",clienteSolicitarPedido).Methods("POST")
-	router.HandleFunc("/restaurante_recibir_pedido",RestauranteRecibirPedido).Methods("POST")
+	router.HandleFunc("/restaurante_recibir_pedido",restauranteRecibirPedido).Methods("POST")
 	router.HandleFunc("/registrar_microservicio",registrarMicroServicio).Methods("POST")
 	http.ListenAndServe(":8085", router)
 
