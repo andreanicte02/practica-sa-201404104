@@ -151,9 +151,9 @@ func handle()  {
 
 func main (){
 
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "recibir_pedidio","/recibir_pedidio","repartidor","POST"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "marcar_pedido","/marcar_pedido","repartidor","POST"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "recibir_pedidio","/recibir_pedidio","repartidor","POST"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "marcar_pedido","/marcar_pedido","repartidor","POST"}, "POST","8085","/registrar_microservicio")
 
 	println("escuchando el puerto 8082")
 	handle()

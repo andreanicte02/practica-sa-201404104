@@ -21,8 +21,8 @@ type JSONGenerico struct {
 //struct de un mensaje generico
 type JSONMessageGeneric struct {
 
-	Message string
-	Id      int
+	Message string `json:"message"`
+	Id      int `json:"id"`
 
 }
 
@@ -91,6 +91,7 @@ type ServicioData struct {
 
 }
 
+//decodificador
 func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGeneric  {
 	decoder:= json.NewDecoder(body)
 	decoder.Decode(data)
@@ -98,10 +99,11 @@ func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGene
 }
 
 
-func RegistrarServicio(servicio *ServicioData, method string,){
+//funcion para registrar servicios
+func RegistrarServicio(servicio *ServicioData, method string, host string, nameSerivce string){
 
 	dataRequest,_:= json.Marshal(servicio)
-	req,err := http.NewRequest(method, "http://localhost:8085/registrar_microservicio", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest(method, "http://localhost:"+host+ nameSerivce, bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -118,3 +120,38 @@ func RegistrarServicio(servicio *ServicioData, method string,){
 }
 
 
+//buscar en array
+func GetDataService(array []ServicioData, padre string, nombreServicio string) (ServicioData, bool){
+
+	for i:= 0; i< len(array); i++{
+
+		if array[i].Padre==padre && array[i].Nombre == nombreServicio {
+
+			return array[i],true
+		}
+
+	}
+	return ServicioData{"","","","",""},false
+
+}
+
+func PeticionClienteGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string) JSONMessageGeneric {
+
+	dataRequest, _ := json.Marshal(servicio)
+	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
+	fmt.Println("info. recibida")
+	fmt.Println(data)
+
+	return data
+
+}

@@ -34,7 +34,7 @@ func solicitarPedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	m= peticiones_cliente.PeticionSolicitarPedido(&utils.Pedido{menuRandom(),data.Id,0})
+	m=peticiones_cliente.PeticionSolicitarPedido(&utils.Pedido{menuRandom(),data.Id,0})
 	peticiones_cliente.IdPedido = m.Id
 	json.NewEncoder(w).Encode(m)
 	utils.LogSalida(data,m)
@@ -105,9 +105,9 @@ func handle() {
 
 func main()  {
 
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente","POST"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente","GET"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente","GET"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente","POST"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente","GET"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente","GET"}, "POST","8085","/registrar_microservicio")
 
 	fmt.Println("Escuhando puerto 8080")
 	peticiones_cliente.HashPedido = make(map[int]int)

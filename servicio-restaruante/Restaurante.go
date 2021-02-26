@@ -176,9 +176,9 @@ func handle()  {
 
 func main()  {
 
-	utils.RegistrarServicio(&utils.ServicioData{"8081", "recibir_pedido","/recibir_pedido","restaurante","POST"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"}, "POST")
-	utils.RegistrarServicio(&utils.ServicioData{"8081", "avisar_pedido_listo","/avisar_pedido_listo","restaurante","POST"}, "POST")
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "recibir_pedido","/recibir_pedido","restaurante","POST"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8081", "avisar_pedido_listo","/avisar_pedido_listo","restaurante","POST"}, "POST","8085","/registrar_microservicio")
 
 
 	hashMenu[0]=&utils.Menu{0,"menu1"}
