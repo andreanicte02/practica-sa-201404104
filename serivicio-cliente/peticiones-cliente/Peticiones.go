@@ -79,7 +79,7 @@ func PeticionSolicitarEstadoRestaurante(jsonGeneric *utils.JSONGenerico) utils.J
 func PeticionEstadoRepartidor(jsonGeneric *utils.JSONGenerico) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
-	req,err := http.NewRequest("GET", "http://localhost:8082/informar_estado_cliente", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("GET", "http://localhost:8085/repartidor_estado", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}

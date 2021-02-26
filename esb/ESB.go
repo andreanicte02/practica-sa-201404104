@@ -45,7 +45,7 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("data recibida: ")
+	fmt.Println("data recibida: de solicitar_pedido en cliente")
 	fmt.Println(data)
 
 
@@ -75,7 +75,7 @@ func restauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("data recibida: ")
+	fmt.Println("data recibida de el servicio recibir_pedido de restaurante: ")
 	fmt.Println(data)
 
 
@@ -106,7 +106,7 @@ func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("data recibida: ")
+	fmt.Println("data recibida: de  get_estado_restaurante cliente")
 	fmt.Println(data)
 
 
@@ -137,7 +137,7 @@ func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("data recibida: ")
+	fmt.Println("data recibida: de estado_pedido de restaurante")
 	fmt.Println(data)
 
 
@@ -167,11 +167,41 @@ func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 	defer r.Body.Close()
-	fmt.Println("data recibida: ")
+	fmt.Println("data recibida: get_estado_repartidor en cliente ")
 	fmt.Println(data)
 
 
 	padre, existePadre := utils.GetDataService(servicios,"cliente","get_estado_repartidor")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
+
+
+	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+
+}
+
+//endpoint 5
+func repartidorEstado(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.JSONGenerico{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: de repartidor de informar_estado_cliente ")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"repartidor","informar_estado_cliente")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
@@ -189,6 +219,7 @@ func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 func handle()  {
 
 	router := mux.NewRouter()
+	router.HandleFunc("/repartidor_estado",repartidorEstado).Methods("GET")
 	router.HandleFunc("/cliente_estado_repartidor",clienteEstadoRepartidor).Methods("GET")
 	router.HandleFunc("/restaurante_estado_restaurante",restauranteEstadoPedido).Methods("GET")
 	router.HandleFunc("/cliente_estado_restaurante",clienteEstadoRestaurante).Methods("GET")
