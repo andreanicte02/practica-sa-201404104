@@ -273,6 +273,35 @@ func repartidorRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 	json.NewEncoder(w).Encode(dataRespuesta)
 
 }
+//endpoint9
+func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
+
+
+	//recibimos la informacion y el padre del servicio en este cado es id-padre
+	data:= utils.JSONGenerico{}
+	err := json.NewDecoder(r.Body).Decode(&data)
+
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	fmt.Println("data recibida: de repartidor de marcar_pedido ")
+	fmt.Println(data)
+
+
+	padre, existePadre := utils.GetDataService(servicios,"repartidor","marcar_pedido")
+	if!existePadre{
+		fmt.Println("no existe servicio")
+		return
+	}
+
+
+	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	w.Header().Set("Content-Type","application/json")
+	json.NewEncoder(w).Encode(dataRespuesta)
+
+}
 
 
 func handle()  {
@@ -280,6 +309,7 @@ func handle()  {
 	router := mux.NewRouter()
 
 
+	router.HandleFunc("/repartidor_marcar_pedido",repartidorMarcarPedido).Methods("POST")
 	router.HandleFunc("/repartidor_recibir_pedidio",repartidorRecibirPedido).Methods("POST")
 	router.HandleFunc("/restaurante_pedido_listo",restaurantePedidoListo).Methods("POST")
 	router.HandleFunc("/repartidor_estado",repartidorEstado).Methods("GET")
