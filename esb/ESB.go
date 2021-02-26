@@ -94,11 +94,11 @@ func RestauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 //endpoint 3
-func ClienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
+func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.Pedido{}
+	data:= utils.JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -110,14 +110,14 @@ func ClienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"restaurante","recibir_pedido")
+	padre, existePadre := utils.GetDataService(servicios,"cliente","get_estado_restaurante")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= utils.PeticionClienteGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -129,6 +129,7 @@ func handle()  {
 
 	router := mux.NewRouter()
 
+	router.HandleFunc("/cliente_estado_restaurante",clienteEstadoRestaurante).Methods("GET")
 	router.HandleFunc("/cliente_solicitar_pedido",clienteSolicitarPedido).Methods("POST")
 	router.HandleFunc("/restaurante_recibir_pedido",RestauranteRecibirPedido).Methods("POST")
 	router.HandleFunc("/registrar_microservicio",registrarMicroServicio).Methods("POST")
