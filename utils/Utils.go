@@ -135,7 +135,7 @@ func GetDataService(array []ServicioData, padre string, nombreServicio string) (
 
 }
 
-func PeticionClienteGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string) JSONMessageGeneric {
+func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string) JSONMessageGeneric {
 
 	dataRequest, _ := json.Marshal(servicio)
 	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))

@@ -53,7 +53,7 @@ func PeticionSolicitarPedido(pedido *utils.Pedido) utils.JSONMessageGeneric{
 func PeticionSolicitarEstadoRestaurante(jsonGeneric *utils.JSONGenerico) utils.JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
-	req,err := http.NewRequest("GET", "http://localhost:8081/estado_pedido", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("GET", "http://localhost:8085/restaurante_estado_restaurante", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
