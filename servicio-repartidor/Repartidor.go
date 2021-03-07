@@ -1,4 +1,4 @@
-package main
+package servicio_repartidor
 
 import (
 	"encoding/json"
@@ -139,7 +139,12 @@ func marcarPedido(w http.ResponseWriter, r *http.Request)  {
 }
 
 //funcion que expone los servicios del repartidor
-func handle()  {
+func Handle()  {
+
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "recibir_pedidio","/recibir_pedidio","repartidor","POST"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8082", "marcar_pedido","/marcar_pedido","repartidor","POST"}, "POST","8085","/registrar_microservicio")
+
 
 	router := mux.NewRouter()
 	router.HandleFunc("/recibir_pedidio",recibirPedido).Methods("POST")
@@ -149,13 +154,4 @@ func handle()  {
 
 }
 
-func main (){
 
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "recibir_pedidio","/recibir_pedidio","repartidor","POST"}, "POST","8085","/registrar_microservicio")
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"}, "POST","8085","/registrar_microservicio")
-	utils.RegistrarServicio(&utils.ServicioData{"8082", "marcar_pedido","/marcar_pedido","repartidor","POST"}, "POST","8085","/registrar_microservicio")
-
-	println("escuchando el puerto 8082")
-	handle()
-
-}

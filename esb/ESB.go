@@ -1,4 +1,4 @@
-package main
+package esb
 
 import (
 	"../utils"
@@ -304,7 +304,7 @@ func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
 }
 
 
-func handle()  {
+func Handle()  {
 
 	router := mux.NewRouter()
 
@@ -324,9 +324,3 @@ func handle()  {
 }
 
 
-func main()  {
-
-	fmt.Println("escuhando el puerto 8085")
-	handle()
-
-}

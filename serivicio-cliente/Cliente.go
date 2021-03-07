@@ -1,4 +1,4 @@
-package main
+package servicio_cliente
 
 import (
 	"../utils"
@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"math/rand"
 	"net/http"
+
 )
 
 
@@ -90,7 +91,16 @@ func getEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 }
 
 
-func handle() {
+func Handle() {
+
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente","POST"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente","GET"}, "POST","8085","/registrar_microservicio")
+	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente","GET"}, "POST","8085","/registrar_microservicio")
+
+	fmt.Println("Escuhando puerto 8080")
+	peticiones_cliente.HashPedido = make(map[int]int)
+	peticiones_cliente.Codigo  = -1
+	peticiones_cliente.IdPedido = -1
 
 	router := mux.NewRouter()
 	router.HandleFunc("/solicitar_pedido",solicitarPedido).Methods("POST")
@@ -101,19 +111,3 @@ func handle() {
 
 
 
-
-
-func main()  {
-
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "solicitar_pedido","/solicitar_pedido","cliente","POST"}, "POST","8085","/registrar_microservicio")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_restaurante","/get_estado_restaurante","cliente","GET"}, "POST","8085","/registrar_microservicio")
-	utils.RegistrarServicio(&utils.ServicioData{"8080", "get_estado_repartidor","/get_estado_repartidor","cliente","GET"}, "POST","8085","/registrar_microservicio")
-
-	fmt.Println("Escuhando puerto 8080")
-	peticiones_cliente.HashPedido = make(map[int]int)
-	peticiones_cliente.Codigo  = -1
-	peticiones_cliente.IdPedido = -1
-	handle()
-
-
-}
