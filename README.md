@@ -6,7 +6,23 @@ Andrea Nicte Vicente Campos
 
 Prueba de funcionalidad: https://youtu.be/isJWAzotLEA
 
-# Practica 4
+# Practica 5
+
+
+
+### Artefacto
+
+practica-sa-201404104.exe
+
+![img2](img1.png)
+
+
+
+Comando para generacion:
+
+```
+go build
+```
 
 
 
