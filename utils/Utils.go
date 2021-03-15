@@ -92,10 +92,10 @@ type ServicioData struct {
 }
 
 //decodificador
-func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGeneric  {
-	decoder:= json.NewDecoder(body)
-	decoder.Decode(data)
-	return *data
+func Decodificador(Body io.ReadCloser, Data *JSONMessageGeneric) JSONMessageGeneric  {
+	decoder:= json.NewDecoder(Body)
+	decoder.Decode(Data)
+	return *Data
 }
 
 
@@ -188,4 +188,9 @@ func PeticionRepartodpr(servicio *PedidoRepartidor, method string, host string, 
 
 	return data
 
+}
+
+func Suma(numero1, numero2 int) (resultado int) {
+	resultado = numero1 + numero2
+	return
 }
