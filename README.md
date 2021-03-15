@@ -14,7 +14,7 @@ Prueba de funcionalidad: https://youtu.be/isJWAzotLEA
 
 practica-sa-201404104.exe
 
-![img2](img1.png)
+![img2](z-imagenes/img1.png)
 
 
 
@@ -32,7 +32,7 @@ En lugar de que cada servicio interactue entre si, pasaran por el esb, este tend
 
 
 
-![img2](img2.png)
+![img2](z-imagenes/img2.png)
 
 
 
