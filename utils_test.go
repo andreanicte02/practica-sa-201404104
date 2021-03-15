@@ -2,7 +2,6 @@ package main
 
 import (
 	"./utils"
-	"fmt"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -17,7 +16,7 @@ import (
  */
 
 func TestSuma(t *testing.T) {
-	fmt.Println("Test funcion suma:")
+	
 	valor := utils.Suma(7, 23)
 	if valor != 30 {
 		t.Error("Se esperaba 30 y se obtuvo", valor)
@@ -31,7 +30,7 @@ func TestSuma(t *testing.T) {
 */
 
 func TestGetDataService(t *testing.T) {
-	fmt.Println("Test funcion GetDataService:")
+	
 	servicios := []utils.ServicioData{}
 	servicios = append(servicios, utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"})
 	servicios = append(servicios, utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"})
@@ -52,7 +51,7 @@ func TestGetDataService(t *testing.T) {
 */
 
 func TestDecodificador(t *testing.T) {
-	fmt.Println("Test funcion GetDataService:")
+	
 	body := ioutil.NopCloser(strings.NewReader("\"{\"Message\":\"Hola mundo\",\"Id\":1}\""))
 	message:= utils.JSONMessageGeneric{"test",1}
 	valor:= utils.Decodificador(body,&message)

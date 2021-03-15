@@ -10,7 +10,102 @@ Prueba de funcionalidad: https://youtu.be/isJWAzotLEA
 
 
 
-### Artefacto
+## Instalando sonarqube:
+
+```
+docker run -d --name sonarqube -p 9000:9000 sonarqube
+```
+
+funciona sobre el puerto 9000
+
+
+
+Descargando sonnarscanner:
+
+```
+https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/
+```
+
+
+
+En sonarqube le puse el nombre de Gotest
+
+
+
+Se ejecuta la siguiente linea de comando, sobre el cd en el que se encuentren las pruebas (estas lineas son obtenidas a través de sonar)
+
+```
+sonar-scanner \
+  -Dsonar.projectKey=Gotest \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.login=b821e2cb1016f47467bb510b35275e1a9f1a434a
+```
+
+
+
+## Pruebas unitarias:
+
+se encuentran en el archivo utils_test.go
+
+
+
+```go
+/*
+	prueba que verifica si la suma de dos numeros es correcta
+ */
+
+func TestSuma(t *testing.T) {
+	fmt.Println("Test funcion suma:")
+	valor := utils.Suma(7, 23)
+	if valor != 30 {
+		t.Error("Se esperaba 30 y se obtuvo", valor)
+	}
+}
+```
+
+
+
+```go
+/*
+	prueba que verifica que el procedimiento de buscar servicios sea correcto
+*/
+
+func TestGetDataService(t *testing.T) {
+	fmt.Println("Test funcion GetDataService:")
+	servicios := []utils.ServicioData{}
+	servicios = append(servicios, utils.ServicioData{"8082", "informar_estado_cliente","/informar_estado_cliente","repartidor","GET"})
+	servicios = append(servicios, utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"})
+
+	_,existe := utils.GetDataService(servicios,"repartidor","informar_estado_cliente")
+
+	if !existe {
+		t.Error("se esperaba un valor verdero y se obtuvo", false)
+	}
+
+}
+```
+
+```go
+/*
+	preuba que verifica si la funcion para decodifcar funciona de manera cocrrecta
+*/
+
+func TestDecodificador(t *testing.T) {
+	fmt.Println("Test funcion GetDataService:")
+	body := ioutil.NopCloser(strings.NewReader("\"{\"Message\":\"Hola mundo\",\"Id\":1}\""))
+	message:= utils.JSONMessageGeneric{"test",1}
+	valor:= utils.Decodificador(body,&message)
+
+	if(valor.Message!="test"){
+		t.Error("Se esperaba la palabra test y se obutvo", valor.Message)
+	}
+}
+```
+
+
+
+## Artefacto
 
 practica-sa-201404104.exe
 
