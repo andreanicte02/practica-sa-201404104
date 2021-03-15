@@ -6,9 +6,12 @@ import (
 	"./servicio-repartidor"
 	"./servicio-restaruante"
 	"fmt"
+	"./utils"
 )
 
 func main()  {
+
+	utils.Suma(1,2)
 
 
 	go func() {

@@ -28,7 +28,7 @@ https://docs.sonarqube.org/latest/analysis/scan/sonarscanner/
 
 
 
-En sonarqube le puse el nombre de Gotest
+En sonarqube le puse el nombre de Gotest al proyecto
 
 
 
