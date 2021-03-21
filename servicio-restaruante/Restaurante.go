@@ -1,7 +1,7 @@
-package servicio_restaruante
+package main
 
 import (
-	"../utils"
+	"./utils"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -161,7 +161,21 @@ func simulacionEntregaPedidoAlRepartidor(idPedido int){
 
 
 //funcion que expone los servicios del restaurante
-func Handle()  {
+func handle()  {
+
+	router := mux.NewRouter()
+	router.HandleFunc("/recibir_pedido",recibirPedido).Methods("POST")
+	router.HandleFunc("/estado_pedido",estadoPedido).Methods("GET")
+	router.HandleFunc("/avisar_pedido_listo",avisarPedidoListo).Methods("POST")
+	http.ListenAndServe(":8081", router)
+
+}
+
+
+
+
+
+func main()  {
 
 	utils.RegistrarServicio(&utils.ServicioData{"8081", "recibir_pedido","/recibir_pedido","restaurante","POST"}, "POST","8085","/registrar_microservicio")
 	utils.RegistrarServicio(&utils.ServicioData{"8081", "estado_pedido","/estado_pedido","restaurante","GET"}, "POST","8085","/registrar_microservicio")
@@ -176,15 +190,9 @@ func Handle()  {
 	hashCliente[1]=&utils.Cliente{1,"cliente2"}
 	hashCliente[2]=&utils.Cliente{2,"cliente2"}
 
+	println("escuchando el puerto 8081")
+	handle()
 
-	router := mux.NewRouter()
-	router.HandleFunc("/recibir_pedido",recibirPedido).Methods("POST")
-	router.HandleFunc("/estado_pedido",estadoPedido).Methods("GET")
-	router.HandleFunc("/avisar_pedido_listo",avisarPedidoListo).Methods("POST")
-	http.ListenAndServe(":8081", router)
+
 
 }
-
-
-
-
