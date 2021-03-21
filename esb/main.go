@@ -1,20 +1,198 @@
 package main
 
 import (
-	"./utils"
+
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io"
+	"log"
 	"net/http"
 )
 
-var servicios = []utils.ServicioData{}
-var m utils.JSONMessageGeneric
+
+
+
+
+
+//struct de un json generico
+type JSONGenerico struct {
+
+	Id int `json:"id"`
+
+}
+//struct de un mensaje generico
+type JSONMessageGeneric struct {
+
+	Message string `json:"message"`
+	Id      int `json:"id"`
+
+}
+
+//json para enviar la data y registrar los servicios en el ESB
+type JSONMessageServices struct {
+
+	Name string
+	Ruta string
+	HOST  int
+
+}
+
+
+//struct que nos va ayudar a simular los menus en memoria
+type Menu struct {
+	Id int
+	Descripcion string
+}
+
+//struct que nos va ayudar a simular los clientes en memoria
+type Cliente struct {
+	Id int
+	Nombre string
+}
+
+//struct que va ayudar a almacenar la informacion de pedidos en memoria del restaurante
+type Pedido struct {
+
+	IdMenu int `json:"idMenu"`
+	IdCliente int `json:"idCliente"`
+	IdEstado int `json:"IdEstado"` //0 pendiente 1 completado
+
+
+}
+
+
+//struct que va ayudar a almacenar la informacion de pedidos en memoria del repartidor
+type PedidoRepartidor struct {
+
+	IdMenu int `json:"idMenu"`
+	IdCliente int `json:"idCliente"`
+	IdEstado int `json:"IdEstado"` //0 pendiente 1 completado
+	DescripcionMenu string `json:"DescripcionMenu"`
+	IdPedido int  `json:"idPedido"`
+	EstadoRepartidor int `json:"estadoRepartidor ya tomo el pedido o no"`
+
+
+}
+
+
+type ServicioData struct {
+
+	Host string
+	Nombre string
+	Ruta string
+	Padre string
+	Method string
+
+
+}
+
+//decodificador
+func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGeneric  {
+	decoder:= json.NewDecoder(body)
+	decoder.Decode(data)
+	return *data
+}
+
+
+//funcion para registrar servicios
+func RegistrarServicio(servicio *ServicioData, method string, host string, nameSerivce string){
+
+	dataRequest,_:= json.Marshal(servicio)
+	req,err := http.NewRequest(method, "http://localhost:"+host+ nameSerivce, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body,&JSONMessageGeneric{"",0})
+	fmt.Println("info. recibida")
+	fmt.Println(data)
+
+}
+
+
+//buscar en array
+func GetDataService(array []ServicioData, padre string, nombreServicio string) (ServicioData, bool){
+
+	for i:= 0; i< len(array); i++{
+
+		if array[i].Padre==padre && array[i].Nombre == nombreServicio {
+
+			return array[i],true
+		}
+
+	}
+	return ServicioData{"","","","",""},false
+
+}
+
+func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string) JSONMessageGeneric {
+
+	dataRequest, _ := json.Marshal(servicio)
+	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
+	return data
+
+}
+
+func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServicio string) JSONMessageGeneric {
+
+	dataRequest, _ := json.Marshal(servicio)
+	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
+	return data
+
+}
+
+func PeticionRepartodpr(servicio *PedidoRepartidor, method string, host string, rutaServicio string) JSONMessageGeneric {
+
+	dataRequest, _ := json.Marshal(servicio)
+	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERRO] -", err)
+	}
+
+	defer resp.Body.Close()
+	var data = Decodificador(resp.Body, &JSONMessageGeneric{"", 0})
+
+	return data
+
+}
+var servicios = []ServicioData{}
+var m JSONMessageGeneric
 
 
 func registrarMicroServicio(w http.ResponseWriter, r *http.Request)  {
 
-	var dataServicio = utils.ServicioData{}
+	var dataServicio = ServicioData{}
 	err := json.NewDecoder(r.Body).Decode(&dataServicio)
 	if err != nil{
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -24,7 +202,7 @@ func registrarMicroServicio(w http.ResponseWriter, r *http.Request)  {
 	defer r.Body.Close()
 
 	servicios = append(servicios, dataServicio)
-	m= utils.JSONMessageGeneric{Message: "Servicio Registrado", Id: 1}
+	m= JSONMessageGeneric{Message: "Servicio Registrado", Id: 1}
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(m)
 	fmt.Println("Servicio registrado: " + dataServicio.Nombre +  " microservicio: " + dataServicio.Padre)
@@ -37,7 +215,7 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -49,13 +227,13 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"cliente","solicitar_pedido")
+	padre, existePadre := GetDataService(servicios,"cliente","solicitar_pedido")
 	if !existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
@@ -67,7 +245,7 @@ func restauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.Pedido{}
+	data:= Pedido{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -79,14 +257,14 @@ func restauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"restaurante","recibir_pedido")
+	padre, existePadre := GetDataService(servicios,"restaurante","recibir_pedido")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -98,7 +276,7 @@ func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -110,14 +288,14 @@ func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"cliente","get_estado_restaurante")
+	padre, existePadre :=GetDataService(servicios,"cliente","get_estado_restaurante")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -129,7 +307,7 @@ func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:=JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -141,14 +319,14 @@ func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"restaurante","estado_pedido")
+	padre, existePadre := GetDataService(servicios,"restaurante","estado_pedido")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -159,7 +337,7 @@ func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -171,14 +349,14 @@ func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"cliente","get_estado_repartidor")
+	padre, existePadre := GetDataService(servicios,"cliente","get_estado_repartidor")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -189,7 +367,7 @@ func repartidorEstado(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -201,14 +379,14 @@ func repartidorEstado(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"repartidor","informar_estado_cliente")
+	padre, existePadre := GetDataService(servicios,"repartidor","informar_estado_cliente")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -219,7 +397,7 @@ func restaurantePedidoListo(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -231,14 +409,14 @@ func restaurantePedidoListo(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"restaurante","avisar_pedido_listo")
+	padre, existePadre := GetDataService(servicios,"restaurante","avisar_pedido_listo")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -249,7 +427,7 @@ func repartidorRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.PedidoRepartidor{}
+	data:= PedidoRepartidor{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -261,14 +439,14 @@ func repartidorRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"repartidor","recibir_pedidio")
+	padre, existePadre := GetDataService(servicios,"repartidor","recibir_pedidio")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionRepartodpr(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionRepartodpr(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -278,7 +456,7 @@ func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
 
 
 	//recibimos la informacion y el padre del servicio en este cado es id-padre
-	data:= utils.JSONGenerico{}
+	data:= JSONGenerico{}
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil{
@@ -290,14 +468,14 @@ func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
 	fmt.Println(data)
 
 
-	padre, existePadre := utils.GetDataService(servicios,"repartidor","marcar_pedido")
+	padre, existePadre := GetDataService(servicios,"repartidor","marcar_pedido")
 	if!existePadre{
 		fmt.Println("no existe servicio")
 		return
 	}
 
 
-	dataRespuesta:= utils.PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
