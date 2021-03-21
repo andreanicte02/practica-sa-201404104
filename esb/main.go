@@ -31,26 +31,9 @@ type JSONMessageGeneric struct {
 }
 
 //json para enviar la data y registrar los servicios en el ESB
-type JSONMessageServices struct {
-
-	Name string
-	Ruta string
-	HOST  int
-
-}
 
 
-//struct que nos va ayudar a simular los menus en memoria
-type Menu struct {
-	Id int
-	Descripcion string
-}
 
-//struct que nos va ayudar a simular los clientes en memoria
-type Cliente struct {
-	Id int
-	Nombre string
-}
 
 //struct que va ayudar a almacenar la informacion de pedidos en memoria del restaurante
 type Pedido struct {
@@ -96,25 +79,7 @@ func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGene
 }
 
 
-//funcion para registrar servicios
-func RegistrarServicio(servicio *ServicioData, method string, host string, nameSerivce string){
 
-	dataRequest,_:= json.Marshal(servicio)
-	req,err := http.NewRequest(method, "http://localhost:"+host+ nameSerivce, bytes.NewBuffer(dataRequest))
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Println("Error on response.\n[ERRO] -", err)
-	}
-
-	defer resp.Body.Close()
-	var data = Decodificador(resp.Body,&JSONMessageGeneric{"",0})
-	fmt.Println("info. recibida")
-	fmt.Println(data)
-
-}
 
 
 //buscar en array
@@ -481,6 +446,10 @@ func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
 
 }
 
+func Suma(numero1, numero2 int) (resultado int) {
+	resultado = numero1 + numero2
+	return
+}
 
 func handle()  {
 
