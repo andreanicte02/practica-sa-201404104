@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../utils"
+	"./utils"
 	"./peticiones-cliente"
 	"encoding/json"
 	"fmt"

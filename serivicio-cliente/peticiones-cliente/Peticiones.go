@@ -1,7 +1,7 @@
 package peticiones_cliente
 
 import (
-	"../../utils"
+	"../utils"
 	"bytes"
 	"encoding/json"
 	"log"
