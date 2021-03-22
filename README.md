@@ -14,7 +14,7 @@ Prueba de funcionalidad: https://youtu.be/VuCj23knNyo
 
 ```
 docker run -d --name sonarqube -p 9000:9000 sonarqube
-```
+```g
 
 funciona sobre el puerto 9000
 
