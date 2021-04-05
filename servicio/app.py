@@ -10,28 +10,7 @@ cors = CORS(app, resources={r"/*": {"origin": "*"}})
 
 @app.route('/', methods=['GET'])
 def check():
-    return str(os.getenv('SERVNAME'))+": Todo good"
-
-
-@app.route('/add_reporte', methods=['POST'])
-def add_reporte():
-    # {"carnet":0, "nombre":"nombre", "curso":"curso"}
-    content = request.get_json()
-    content['procesado'] = str(os.getenv('SERVNAME'))
-    db = Database()
-    res = db.add_reporte(content)
-    res['atendido'] = str(os.getenv('SERVNAME'))
-    return json.dumps(res)
-
-
-@app.route('/get_reporte', methods=['GET'])
-def get_reporte():
-    reporte = request.args.get('reporte')
-    res = {}
-    res['atendido'] = str(os.getenv('SERVNAME'))
-    db = Database()
-    res['data'] = db.get_reporte(reporte)
-    return json.dumps(res, default=str)
+    return str(os.getenv('SERVNAME'))+": hola mundo :)"
 
 
 @app.route('/get_simple', methods=['GET'])
@@ -41,16 +20,6 @@ def get_simple():
     res['atendido'] = str(os.getenv('SERVNAME'))
     db = Database()
     res['data'] = db.get_simple(reporte)
-    return json.dumps(res, default=str)
-
-
-@app.route('/get_lista_reporte', methods=['GET'])
-def get_lista_reporte():
-    carnet = request.args.get('carnet')
-    res = {}
-    res['atendido'] = str(os.getenv('SERVNAME'))
-    db = Database()
-    res['data'] = db.get_lista_reporte(carnet)
     return json.dumps(res, default=str)
 
 
