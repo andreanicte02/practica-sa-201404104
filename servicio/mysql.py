@@ -5,11 +5,10 @@ import pymysql.cursors
 class Database:
     def __init__(self):
         self.connection = pymysql.connect(
-            # host="localhost",
-            host='10.10.11.1',
+            host='database',
             user="root",
             passwd="201404104",
-            db="p8-sa",
+            db="p8sa",
             cursorclass=pymysql.cursors.DictCursor,
             sql_mode=''
         )
@@ -54,6 +53,23 @@ class Database:
             ret['ok'] = False
             ret['error'] = str(e)
         return ret
+
+    def get_simple(self, reporte):
+        ret = {}
+        try:
+            with self.connection.cursor() as cursor:
+                sql = 'SELECT *From Estudiante'
+                cursor.execute(sql)
+                ret = cursor.fetchall()
+
+
+        except Exception as e:
+            ret = {}
+            ret['ok'] = False
+            ret['error'] = str(e)
+        return ret
+
+
 
     def get_lista_reporte(self, carnet):
         ret = {}

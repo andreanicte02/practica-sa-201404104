@@ -34,6 +34,16 @@ def get_reporte():
     return json.dumps(res, default=str)
 
 
+@app.route('/get_simple', methods=['GET'])
+def get_simple():
+    reporte = ''
+    res = {}
+    res['atendido'] = str(os.getenv('SERVNAME'))
+    db = Database()
+    res['data'] = db.get_simple(reporte)
+    return json.dumps(res, default=str)
+
+
 @app.route('/get_lista_reporte', methods=['GET'])
 def get_lista_reporte():
     carnet = request.args.get('carnet')
