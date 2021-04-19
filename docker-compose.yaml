@@ -19,8 +19,6 @@ services:
     service1:
         build: servicio/.
         container_name: service1
-        ports:
-            - '5001:5000'
         volumes:
             - '.:/backend/code'
         environment:
