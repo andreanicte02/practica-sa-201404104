@@ -455,7 +455,6 @@ func handle()  {
 
 	router := mux.NewRouter()
 
-
 	router.HandleFunc("/repartidor_marcar_pedido",repartidorMarcarPedido).Methods("POST")
 	router.HandleFunc("/repartidor_recibir_pedidio",repartidorRecibirPedido).Methods("POST")
 	router.HandleFunc("/restaurante_pedido_listo",restaurantePedidoListo).Methods("POST")
