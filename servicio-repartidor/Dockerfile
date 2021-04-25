@@ -7,13 +7,13 @@ ENV GO111MODULE=on \
 
 
 WORKDIR /build
-COPY practica-sa-201404104/serivicio-cliente/go.mod .
-COPY practica-sa-201404104/serivicio-cliente/go.sum .
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
-COPY practica-sa-201404104/serivicio-cliente/. .
+COPY . .
 RUN go build -o main .
 WORKDIR /dist
 RUN cp /build/main .
-EXPOSE 8080
+EXPOSE 8082
 CMD ["/dist/main"]

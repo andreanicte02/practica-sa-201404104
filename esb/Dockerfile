@@ -7,11 +7,11 @@ ENV GO111MODULE=on \
 
 
 WORKDIR /build
-COPY practica-sa-201404104/esb/go.mod .
-COPY practica-sa-201404104/esb/go.sum .
+COPY go.mod .
+COPY go.sum .
 RUN go mod download
 
-COPY practica-sa-201404104/esb/. .
+COPY . .
 RUN go build -o main .
 WORKDIR /dist
 RUN cp /build/main .
