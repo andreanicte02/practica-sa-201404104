@@ -103,7 +103,7 @@ func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGene
 func RegistrarServicio(servicio *ServicioData, method string, host string, nameSerivce string){
 
 	dataRequest,_:= json.Marshal(servicio)
-	req,err := http.NewRequest(method, "http://localhost:"+host+ nameSerivce, bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest(method, "http://esb:"+host+ nameSerivce, bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}

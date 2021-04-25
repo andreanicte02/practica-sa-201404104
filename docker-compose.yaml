@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  esb:
+    build: esb/.
+    ports:
+        - 8085:8085
+    networks:
+      service_network:
+
+
+  cliente:
+    build: serivicio-cliente/.
+    networks:
+      service_network:
+    depends_on:
+      - esb
+
+  repartidor:
+    build: servicio-repartidor/.
+    networks:
+        service_network:
+    depends_on:
+      - esb
+
+
+  restaurante:
+    build: servicio-restaruante/.
+    networks:
+      service_network:
+    depends_on:
+      - esb
+
+
+networks:
+    service_network:
+        driver: bridge
+
+    default:
+      external:
+        name: service_network
