@@ -71,6 +71,23 @@ type ServicioData struct {
 
 }
 
+func getService(host string)  string{
+
+	if(host == "8085"){
+		return "esb"
+	}else if (host=="8080"){
+		return "cliente"
+	}else if(host == "8081"){
+		return "restaurante"
+	}else if(host == "8082"){
+		return "repartidor"
+	}
+
+	return "8080"
+
+
+}
+
 //decodificador
 func Decodificador(body io.ReadCloser, data *JSONMessageGeneric) JSONMessageGeneric  {
 	decoder:= json.NewDecoder(body)
@@ -97,10 +114,10 @@ func GetDataService(array []ServicioData, padre string, nombreServicio string) (
 
 }
 
-func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string) JSONMessageGeneric {
+func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rutaServicio string,nameService string) JSONMessageGeneric {
 
 	dataRequest, _ := json.Marshal(servicio)
-	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req, err := http.NewRequest(method, "http://"+nameService+":"+host+rutaServicio, bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -115,10 +132,10 @@ func PeticionJSONGeneric(servicio *JSONGenerico, method string, host string, rut
 
 }
 
-func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServicio string) JSONMessageGeneric {
+func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServicio string,nameService string) JSONMessageGeneric {
 
 	dataRequest, _ := json.Marshal(servicio)
-	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req, err := http.NewRequest(method, "http://"+nameService+":"+host+rutaServicio, bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -133,10 +150,10 @@ func PeticionRestaurante(servicio *Pedido, method string, host string, rutaServi
 
 }
 
-func PeticionRepartodpr(servicio *PedidoRepartidor, method string, host string, rutaServicio string) JSONMessageGeneric {
+func PeticionRepartodpr(servicio *PedidoRepartidor, method string, host string, rutaServicio string, nameService string) JSONMessageGeneric {
 
 	dataRequest, _ := json.Marshal(servicio)
-	req, err := http.NewRequest(method, "http://localhost:"+host+rutaServicio, bytes.NewBuffer(dataRequest))
+	req, err := http.NewRequest(method, "http://"+nameService+":"+host+rutaServicio, bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -172,7 +189,7 @@ func registrarMicroServicio(w http.ResponseWriter, r *http.Request)  {
 	json.NewEncoder(w).Encode(m)
 	fmt.Println("Servicio registrado: " + dataServicio.Nombre +  " microservicio: " + dataServicio.Padre)
 	fmt.Println("data")
-	
+
 }
 
 //end point 1
@@ -198,7 +215,7 @@ func clienteSolicitarPedido(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta, getService(padre.Host))
 
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
@@ -229,7 +246,7 @@ func restauranteRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionRestaurante(&data,padre.Method,padre.Host, padre.Ruta, getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -260,7 +277,7 @@ func clienteEstadoRestaurante(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta, getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -291,7 +308,7 @@ func restauranteEstadoPedido(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta, getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -321,7 +338,7 @@ func clienteEstadoRepartidor(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta, getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -351,7 +368,7 @@ func repartidorEstado(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta,getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -381,7 +398,7 @@ func restaurantePedidoListo(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta,getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -411,7 +428,8 @@ func repartidorRecibirPedido(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionRepartodpr(&data,padre.Method,padre.Host, padre.Ruta)
+
+	dataRespuesta:= PeticionRepartodpr(&data,padre.Method,padre.Host, padre.Ruta,getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 
@@ -440,7 +458,7 @@ func repartidorMarcarPedido(w http.ResponseWriter, r *http.Request)  {
 	}
 
 
-	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta)
+	dataRespuesta:= PeticionJSONGeneric(&data,padre.Method,padre.Host, padre.Ruta,getService(padre.Host))
 	w.Header().Set("Content-Type","application/json")
 	json.NewEncoder(w).Encode(dataRespuesta)
 

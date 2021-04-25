@@ -148,7 +148,7 @@ var IdPedido = -1
 func PeticionSolicitarPedido(pedido *Pedido) JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(pedido)
-	req,err := http.NewRequest("POST", "http://localhost:8085/restaurante_recibir_pedido", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("POST", "http://esb:8085/restaurante_recibir_pedido", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -172,7 +172,7 @@ func PeticionSolicitarPedido(pedido *Pedido) JSONMessageGeneric{
 func PeticionSolicitarEstadoRestaurante(jsonGeneric *JSONGenerico) JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
-	req,err := http.NewRequest("GET", "http://localhost:8085/restaurante_estado_restaurante", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("GET", "http://esb:8085/restaurante_estado_restaurante", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
@@ -198,7 +198,7 @@ func PeticionSolicitarEstadoRestaurante(jsonGeneric *JSONGenerico) JSONMessageGe
 func PeticionEstadoRepartidor(jsonGeneric *JSONGenerico) JSONMessageGeneric{
 
 	dataRequest,_:= json.Marshal(jsonGeneric)
-	req,err := http.NewRequest("GET", "http://localhost:8085/repartidor_estado", bytes.NewBuffer(dataRequest))
+	req,err := http.NewRequest("GET", "http://esb:8085/repartidor_estado", bytes.NewBuffer(dataRequest))
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	client := &http.Client{}
