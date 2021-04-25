@@ -15,5 +15,5 @@ COPY . .
 RUN go build -o main .
 WORKDIR /dist
 RUN cp /build/main .
-EXPOSE 8085
+EXPOSE 8080
 CMD ["/dist/main"]
