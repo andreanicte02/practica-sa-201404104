@@ -12,6 +12,8 @@ services:
 
   cliente:
     build: serivicio-cliente/.
+    ports:
+      - 8080:8080
     networks:
       service_network:
     depends_on:
@@ -19,6 +21,8 @@ services:
 
   repartidor:
     build: servicio-repartidor/.
+    ports:
+      - 8082:8082
     networks:
         service_network:
     depends_on:
@@ -27,6 +31,8 @@ services:
 
   restaurante:
     build: servicio-restaruante/.
+    ports:
+      - 8081:8081
     networks:
       service_network:
     depends_on:
